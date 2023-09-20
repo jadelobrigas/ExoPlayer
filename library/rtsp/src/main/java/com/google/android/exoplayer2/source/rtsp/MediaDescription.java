@@ -121,6 +121,7 @@ import java.util.HashMap;
     private static final int RTP_STATIC_PAYLOAD_TYPE_PCMA = 8;
     private static final int RTP_STATIC_PAYLOAD_TYPE_L16_STEREO = 10;
     private static final int RTP_STATIC_PAYLOAD_TYPE_L16_MONO = 11;
+    private static final int RTP_STATIC_PAYLOAD_TYPE_AVP = 33;
 
     private final String mediaType;
     private final int port;
@@ -249,6 +250,7 @@ import java.util.HashMap;
               /* clockRate= */ 8_000,
               /* channelCount= */ 1);
         case RTP_STATIC_PAYLOAD_TYPE_L16_STEREO:
+        case RTP_STATIC_PAYLOAD_TYPE_AVP:
           return constructAudioRtpMap(
               RTP_STATIC_PAYLOAD_TYPE_L16_STEREO,
               /* mediaEncoding= */ "L16",
