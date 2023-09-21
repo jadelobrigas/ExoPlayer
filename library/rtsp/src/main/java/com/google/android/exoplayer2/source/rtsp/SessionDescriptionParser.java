@@ -188,7 +188,7 @@ import java.util.regex.Pattern;
           mediaDescriptionBuilder = parseMediaDescriptionLine(sdpValue);
 
           if (checkRTPAVPStream(sdpValue)) {
-            sdpValue = "a=rtpmap:96 H264/90000";
+            sdpValue = "rtpmap:96 H264/90000";
 
             matcher = ATTRIBUTE_PATTERN.matcher(sdpValue);
             if (!matcher.matches()) {
