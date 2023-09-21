@@ -25,6 +25,8 @@ import android.net.Uri;
 import androidx.annotation.Nullable;
 import com.google.android.exoplayer2.ParserException;
 import com.google.android.exoplayer2.util.Util;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -188,22 +190,28 @@ import java.util.regex.Pattern;
           mediaDescriptionBuilder = parseMediaDescriptionLine(sdpValue);
 
           if (checkRTPAVPStream(sdpValue)) {
-            sdpValue = "rtpmap:96 H264/90000";
+            List<String> rtpmapValues = new ArrayList<>();
+            rtpmapValues.add("rtpmap:96 H264/90000");
+            rtpmapValues.add("fmtp:96 packetization-mode=1; profile-level-id=42C015; sprop-parameter-sets=Z0LAFdkBQfsBagwMDUoAAAMAAgAAAwB5HixckA==,aMuMsg==");
 
-            matcher = ATTRIBUTE_PATTERN.matcher(sdpValue);
-            if (!matcher.matches()) {
-              throw ParserException.createForMalformedManifest(
-                  "Malformed Attribute line: " + line, /* cause= */ null);
-            }
+            for (String rtpmapValue: rtpmapValues) {
 
-            attributeName = checkNotNull(matcher.group(1));
-            // The second catching group is optional and thus could be null.
-            attributeValue = nullToEmpty(matcher.group(2));
+              sdpValue = rtpmapValue;
+              matcher = ATTRIBUTE_PATTERN.matcher(sdpValue);
+              if (!matcher.matches()) {
+                throw ParserException.createForMalformedManifest(
+                    "Malformed Attribute line: " + line, /* cause= */ null);
+              }
 
-            if (mediaDescriptionBuilder == null) {
-              sessionDescriptionBuilder.addAttribute(attributeName, attributeValue);
-            } else {
-              mediaDescriptionBuilder.addAttribute(attributeName, attributeValue);
+              attributeName = checkNotNull(matcher.group(1));
+              // The second catching group is optional and thus could be null.
+              attributeValue = nullToEmpty(matcher.group(2));
+
+              if (mediaDescriptionBuilder == null) {
+                sessionDescriptionBuilder.addAttribute(attributeName, attributeValue);
+              } else {
+                mediaDescriptionBuilder.addAttribute(attributeName, attributeValue);
+              }
             }
           }
           break;
