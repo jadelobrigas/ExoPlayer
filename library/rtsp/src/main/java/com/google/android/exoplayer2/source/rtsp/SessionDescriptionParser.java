@@ -190,9 +190,22 @@ import java.util.regex.Pattern;
           mediaDescriptionBuilder = parseMediaDescriptionLine(sdpValue);
 
           if (checkRTPAVPStream(sdpValue)) {
+            matcher = MEDIA_DESCRIPTION_PATTERN.matcher(line);
+            if (!matcher.matches()) {
+              throw ParserException.createForMalformedManifest(
+                  "Malformed SDP media description line: " + line, /* cause= */ null);
+            }
+            String mediaType = checkNotNull(matcher.group(1));
+            String portString = checkNotNull(matcher.group(2));
+            String transportProtocol = checkNotNull(matcher.group(3));
+            String payloadTypeString = checkNotNull(matcher.group(4));
+
+            sdpValue = mediaType + " " + portString + " " + transportProtocol + " " + "96";
+            mediaDescriptionBuilder = parseMediaDescriptionLine(sdpValue);
+
             List<String> rtpmapValues = new ArrayList<>();
             rtpmapValues.add("rtpmap:96 H264/90000");
-            rtpmapValues.add("fmtp:96 packetization-mode=1; profile-level-id=42C015; sprop-parameter-sets=Z0LAFdkBQfsBagwMDUoAAAMAAgAAAwB5HixckA==,aMuMsg==");
+            rtpmapValues.add("fmtp:96 packetization-mode=1");
 
             for (String rtpmapValue: rtpmapValues) {
 
