@@ -188,7 +188,23 @@ import java.util.regex.Pattern;
           mediaDescriptionBuilder = parseMediaDescriptionLine(sdpValue);
 
           if (checkRTPAVPStream(sdpValue)) {
-            sdpString += "\\r\\na=rtpmap:96 H264/90000";
+            sdpValue = "a=rtpmap:96 H264/90000";
+
+            matcher = ATTRIBUTE_PATTERN.matcher(sdpValue);
+            if (!matcher.matches()) {
+              throw ParserException.createForMalformedManifest(
+                  "Malformed Attribute line: " + line, /* cause= */ null);
+            }
+
+            attributeName = checkNotNull(matcher.group(1));
+            // The second catching group is optional and thus could be null.
+            attributeValue = nullToEmpty(matcher.group(2));
+
+            if (mediaDescriptionBuilder == null) {
+              sessionDescriptionBuilder.addAttribute(attributeName, attributeValue);
+            } else {
+              mediaDescriptionBuilder.addAttribute(attributeName, attributeValue);
+            }
           }
           break;
         case REPEAT_TYPE:
