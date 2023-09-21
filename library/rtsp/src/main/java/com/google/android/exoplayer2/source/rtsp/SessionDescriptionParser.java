@@ -205,7 +205,7 @@ import java.util.regex.Pattern;
 
             List<String> rtpmapValues = new ArrayList<>();
             rtpmapValues.add("rtpmap:96 H264/90000");
-            rtpmapValues.add("fmtp:96 packetization-mode=1");
+            rtpmapValues.add("fmtp:96 packetization-mode=1; profile-level-id=42C015; sprop-parameter-sets=Z0LAFdkBQfsBagwMDUoAAAMAAgAAAwB5HixckA==,aMuMsg==");
 
             for (String rtpmapValue: rtpmapValues) {
 
