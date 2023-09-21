@@ -232,7 +232,7 @@ import java.util.regex.Pattern;
     String payloadTypeString = checkNotNull(matcher.group(4));
 
     boolean isRTPAVPStream = false;
-    if (mediaType.equalsIgnoreCase("video") && transportProtocol.equalsIgnoreCase("RTP/AVP") && payloadTypeString.equals(33)) {
+    if (mediaType.equalsIgnoreCase("video") && payloadTypeString.equals(33)) {
       isRTPAVPStream = true;
     }
     return isRTPAVPStream;
