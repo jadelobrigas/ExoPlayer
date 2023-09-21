@@ -186,6 +186,10 @@ import java.util.regex.Pattern;
             addMediaDescriptionToSession(sessionDescriptionBuilder, mediaDescriptionBuilder);
           }
           mediaDescriptionBuilder = parseMediaDescriptionLine(sdpValue);
+
+          if (checkRTPAVPStream(sdpValue)) {
+            sdpString += "\\r\\na=rtpmap:96 H264/90000";
+          }
           break;
         case REPEAT_TYPE:
         case ZONE_TYPE:
@@ -214,6 +218,24 @@ import java.util.regex.Pattern;
     } catch (IllegalArgumentException | IllegalStateException e) {
       throw ParserException.createForMalformedManifest(/* message= */ null, e);
     }
+  }
+
+  private static boolean checkRTPAVPStream(String line) throws ParserException {
+    Matcher matcher = MEDIA_DESCRIPTION_PATTERN.matcher(line);
+    if (!matcher.matches()) {
+      throw ParserException.createForMalformedManifest(
+          "Malformed SDP media description line: " + line, /* cause= */ null);
+    }
+    String mediaType = checkNotNull(matcher.group(1));
+    String portString = checkNotNull(matcher.group(2));
+    String transportProtocol = checkNotNull(matcher.group(3));
+    String payloadTypeString = checkNotNull(matcher.group(4));
+
+    boolean isRTPAVPStream = false;
+    if (mediaType.equalsIgnoreCase("video") && transportProtocol.equalsIgnoreCase("RTP/AVP") && payloadTypeString.equals(33)) {
+      isRTPAVPStream = true;
+    }
+    return isRTPAVPStream;
   }
 
   private static MediaDescription.Builder parseMediaDescriptionLine(String line)
